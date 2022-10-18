@@ -6,7 +6,7 @@ public class DeviceDTO {
 
     @NotBlank(message = "Name is required")
     private String name;
-    @NotBlank(message = "The status is required fafasfjkfakfjasfd")
+    @NotBlank(message = "The status is required")
     private String status;
 
     public String getName() {
