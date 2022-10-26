@@ -17,6 +17,14 @@ public class Voter {
 
     private String fingerprintId;
 
+
+    public Voter() {
+    }
+
+    public Voter(Integer id) {
+        this.id = id;
+    }
+
     public String getFingerprintId() {
         return fingerprintId;
     }
@@ -38,6 +46,10 @@ public class Voter {
 
     public Integer getId() {
         return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getFirstName() {

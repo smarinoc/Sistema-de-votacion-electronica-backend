@@ -1,18 +1,22 @@
 package co.edu.udea.iot.backend.broker;
 
+import co.edu.udea.iot.backend.service.VoteService;
 import org.eclipse.paho.client.mqttv3.*;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
 @Component
-public class HomeBroker {
+public class VoteBroker {
 
     private final IMqttClient client;
-    private final String DEFAULT_PUB_TOPIC = "home_inbound";
+    private final String DEFAULT_PUB_TOPIC = "front/vote";
     private final String BROKER_URL = "tcp://localhost:1883";
 
-    public HomeBroker() throws MqttException {
+    private final VoteService voteService;
+
+    public VoteBroker(VoteService voteService) throws MqttException {
+        this.voteService = voteService;
         String clientId = UUID.randomUUID().toString();
         client = new MqttClient(BROKER_URL, clientId);
         MqttConnectOptions options = new MqttConnectOptions();
@@ -20,11 +24,27 @@ public class HomeBroker {
         options.setCleanSession(true);
         options.setConnectionTimeout(10);
         client.connect(options);
-        client.subscribe("home_outbound", this::processMessage);
+        client.subscribe(DEFAULT_PUB_TOPIC, this::processMessage);
+        client.subscribe("front/finalize", this::processMessage);
+        client.subscribe("raspberry/vote", this::raspberryVoteing);
+        client.subscribe("finalize", this::finalize);
     }
 
     private void processMessage(String topic, MqttMessage message) {
         System.out.printf("%s -> %s", topic, message);
+    }
+
+    private void raspberryVoteing(String topic, MqttMessage message) throws MqttException {
+         voteService.raspberryVoting(message.toString());
+         this.pubVote();
+    }
+
+    private void finalize(String topic, MqttMessage message) throws MqttException {
+        this.publish("front/finalize", "1");
+    }
+
+    private void pubVote() throws MqttException {
+        this.publish("front/vote", "1");
     }
 
     public void publish(String message) throws MqttException {
@@ -40,10 +60,6 @@ public class HomeBroker {
         msg.setQos(0);
         msg.setRetained(true);
         client.publish(topic, msg);
-    }
-
-    public void listen(String topic, IMqttMessageListener listener) throws MqttException {
-        this.client.subscribe(topic, listener);
     }
 
 }

@@ -30,4 +30,9 @@ public class CampaignService {
         Campaign savedCampaign = campaignRepository.save(mapper.toEntity(campaignDTO));
         return mapper.toDto(savedCampaign);
     }
+
+    public CampaignDTO campaignByID(Integer id){
+        Optional<Campaign> campaign = campaignRepository.findById(id);
+        return  mapper.toDto(campaign.get());
+    }
 }

@@ -6,9 +6,9 @@ public class VoteDTO {
 
     private Integer id;
     @NotBlank(message = "The voter is required")
-    private Integer voter;
+    private VoterDTO voter;
     @NotBlank(message = "The candidate is required")
-    private Integer candidate;
+    private CandidateDTO candidate;
 
     public Integer getId() {
         return id;
@@ -18,20 +18,19 @@ public class VoteDTO {
         this.id = id;
     }
 
-    public Integer getVoterId() {
+    public VoterDTO getVoter() {
         return voter;
     }
 
-    public void setVoterId(Integer voterId) {
-        this.voter = voterId;
+    public void setVoter(VoterDTO voter) {
+        this.voter = voter;
     }
 
-    public Integer getCandidate() {
+    public CandidateDTO getCandidate() {
         return candidate;
     }
 
-    public void setCandidate(Integer candidate) {
+    public void setCandidate(CandidateDTO candidate) {
         this.candidate = candidate;
     }
-
 }
