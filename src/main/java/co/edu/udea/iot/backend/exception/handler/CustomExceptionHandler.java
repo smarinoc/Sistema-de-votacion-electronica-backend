@@ -1,6 +1,7 @@
 package co.edu.udea.iot.backend.exception.handler;
 
 import co.edu.udea.iot.backend.exception.DataDuplicatedException;
+import org.eclipse.paho.client.mqttv3.MqttException;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         System.out.println(request.getRequestURL());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
     }
+
 
 
 }

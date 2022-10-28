@@ -6,14 +6,14 @@ public class VotesByCandidate {
 
     private Integer candidate;
 
-    private Integer count;
+    private Long count;
 
     public VotesByCandidate() {
     }
 
-    public VotesByCandidate(Integer candidate, Integer votesCount) {
+    public VotesByCandidate(Integer candidate, Long votesCount) {
         this.candidate = candidate;
-        this.count = count;
+        this.count = votesCount;
     }
 
     public Integer getCandidate() {
@@ -24,11 +24,11 @@ public class VotesByCandidate {
         this.candidate = candidate;
     }
 
-    public Integer getVotesCount() {
+    public Long getVotesCount() {
         return count;
     }
 
-    public void setVotesCount(Integer votesCount) {
+    public void setVotesCount(Long votesCount) {
         count = votesCount;
     }
 }

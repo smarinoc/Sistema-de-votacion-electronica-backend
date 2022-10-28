@@ -9,6 +9,6 @@ import java.util.List;
 
 public interface VoteRepository extends JpaRepository<Vote, Integer> {
 
-    @Query(value = "select candidate, count(candidate) from vote GROUP BY candidate", nativeQuery = true)
+    @Query(value = "select new co.edu.udea.iot.backend.dto.VotesByCandidate(v.candidate.id, count(v.candidate)) from Vote v GROUP BY v.candidate.id")
     List<VotesByCandidate> votesByCandidate();
 }

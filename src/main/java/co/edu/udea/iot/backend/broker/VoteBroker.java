@@ -10,13 +10,15 @@ import java.util.UUID;
 public class VoteBroker {
 
     private final IMqttClient client;
-    private final String DEFAULT_PUB_TOPIC = "front/vote";
     private final String BROKER_URL = "tcp://localhost:1883";
 
     private final VoteService voteService;
 
-    public VoteBroker(VoteService voteService) throws MqttException {
+    private final WebPublisher webPublisher;
+
+    public VoteBroker(VoteService voteService, WebPublisher webPublisher) throws MqttException {
         this.voteService = voteService;
+        this.webPublisher = webPublisher;
         String clientId = UUID.randomUUID().toString();
         client = new MqttClient(BROKER_URL, clientId);
         MqttConnectOptions options = new MqttConnectOptions();
@@ -24,10 +26,8 @@ public class VoteBroker {
         options.setCleanSession(true);
         options.setConnectionTimeout(10);
         client.connect(options);
-        client.subscribe(DEFAULT_PUB_TOPIC, this::processMessage);
-        client.subscribe("front/finalize", this::processMessage);
         client.subscribe("raspberry/vote", this::raspberryVoteing);
-        client.subscribe("finalize", this::finalize);
+        client.subscribe("finalize", this::frontFinalize);
     }
 
     private void processMessage(String topic, MqttMessage message) {
@@ -35,31 +35,11 @@ public class VoteBroker {
     }
 
     private void raspberryVoteing(String topic, MqttMessage message) throws MqttException {
-         voteService.raspberryVoting(message.toString());
-         this.pubVote();
+        voteService.raspberryVoting(message.toString());
+        webPublisher.publish("front/vote","1");
     }
 
-    private void finalize(String topic, MqttMessage message) throws MqttException {
-        this.publish("front/finalize", "1");
+    private void frontFinalize(String topic, MqttMessage message) throws MqttException {
+        webPublisher.publish("front/finalize", "1");
     }
-
-    private void pubVote() throws MqttException {
-        this.publish("front/vote", "1");
-    }
-
-    public void publish(String message) throws MqttException {
-        this.publish(this.DEFAULT_PUB_TOPIC, message);
-    }
-
-    public void publish(String topic, String message) throws MqttException {
-        if (!client.isConnected()) {
-            //todo log message client not connected
-            return;
-        }
-        MqttMessage msg = new MqttMessage(message.getBytes());
-        msg.setQos(0);
-        msg.setRetained(true);
-        client.publish(topic, msg);
-    }
-
 }
